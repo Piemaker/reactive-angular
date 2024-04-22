@@ -12,9 +12,7 @@ import {
   shareReplay,
   tap,
 } from "rxjs/operators";
-import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import { CourseDialogComponent } from "../course-dialog/course-dialog.component";
-import { CoursesService } from "../services/courses.service";
+import { CoursesService } from "../services/CoursesService";
 
 @Component({
   selector: "home",
@@ -26,12 +24,12 @@ export class HomeComponent implements OnInit {
 
   advancedCourses$: Observable<Course[]>;
 
-  constructor(
-    private courseService: CoursesService,
-    private dialog: MatDialog
-  ) {}
+  constructor(private courseService: CoursesService) {}
 
   ngOnInit() {
+    this.reloadCourses();
+  }
+  reloadCourses() {
     const courses$ = this.courseService.loadAllCourses().pipe(
       map((courses) => {
         return courses.toSorted(sortCoursesBySeqNo);
@@ -44,7 +42,7 @@ export class HomeComponent implements OnInit {
     );
     this.advancedCourses$ = courses$.pipe(
       map((courses) =>
-        courses.filter((course) => course.category === "BEGINNER")
+        courses.filter((course) => course.category === "ADVANCED")
       )
     );
   }
