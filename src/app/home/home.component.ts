@@ -25,7 +25,10 @@ export class HomeComponent implements OnInit {
 
   advancedCourses$: Observable<Course[]>;
 
-  constructor(private courseService: CoursesService, private loadingService: LoadingService) {}
+  constructor(
+    private courseService: CoursesService,
+    private loadingService: LoadingService
+  ) {}
 
   ngOnInit() {
     this.reloadCourses();
@@ -36,12 +39,13 @@ export class HomeComponent implements OnInit {
         return courses.toSorted(sortCoursesBySeqNo);
       })
     );
-    this.beginnerCourses$ = courses$.pipe(
+    const loadCourses$ = this.loadingService.showLoaderUntilComplete(courses$);
+    this.beginnerCourses$ = loadCourses$.pipe(
       map((courses) =>
         courses.filter((course) => course.category === "BEGINNER")
       )
     );
-    this.advancedCourses$ = courses$.pipe(
+    this.advancedCourses$ = loadCourses$.pipe(
       map((courses) =>
         courses.filter((course) => course.category === "ADVANCED")
       )
