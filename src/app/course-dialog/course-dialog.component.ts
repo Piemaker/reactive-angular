@@ -20,6 +20,7 @@ import { LoadingService } from "../loading/loading.service";
   selector: "course-dialog",
   templateUrl: "./course-dialog.component.html",
   styleUrls: ["./course-dialog.component.css"],
+  providers: [LoadingService],
 })
 export class CourseDialogComponent implements AfterViewInit {
   form: FormGroup;
@@ -33,6 +34,8 @@ export class CourseDialogComponent implements AfterViewInit {
     private loadingService: LoadingService,
     @Inject(MAT_DIALOG_DATA) course: Course
   ) {
+    // this will only trigger the loading component in the course dialog component
+    // the instance of the loading component in the app component doesn't have access to this service
     this.course = course;
 
     this.form = fb.group({
@@ -47,7 +50,10 @@ export class CourseDialogComponent implements AfterViewInit {
 
   save() {
     const changes = this.form.value;
-    this.coursesService.saveCourse(this.course.id, changes).subscribe((res) => {
+    const saveCourse$ = this.loadingService.showLoaderUntilComplete(
+      this.coursesService.saveCourse(this.course.id, changes)
+    );
+    saveCourse$.subscribe((res) => {
       this.dialogRef.close(res);
     });
   }

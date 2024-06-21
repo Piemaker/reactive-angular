@@ -9,7 +9,9 @@ export class LoadingService {
   // should be private to prevent other parts application to emit it
   private loadingSubject = new BehaviorSubject<boolean>(false);
   loading$: Observable<boolean> = this.loadingSubject.asObservable();
-  constructor() {}
+  constructor() {
+    console.log("Loading service created 🟢...")
+  }
 
   showLoaderUntilComplete<T>(obs$: Observable<T>): Observable<T> {
     // concatMap executes the next observable when the previous one completes in sequential order
