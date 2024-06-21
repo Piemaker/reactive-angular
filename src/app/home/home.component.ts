@@ -13,6 +13,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { CoursesService } from "../services/CoursesService";
+import { LoadingService } from "../loading/loading.service";
 
 @Component({
   selector: "home",
@@ -24,7 +25,7 @@ export class HomeComponent implements OnInit {
 
   advancedCourses$: Observable<Course[]>;
 
-  constructor(private courseService: CoursesService) {}
+  constructor(private courseService: CoursesService, private loadingService: LoadingService) {}
 
   ngOnInit() {
     this.reloadCourses();
