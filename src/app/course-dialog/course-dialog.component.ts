@@ -16,6 +16,7 @@ import { throwError } from "rxjs";
 import { CoursesService } from "../services/CoursesService";
 import { LoadingService } from "../loading/loading.service";
 import { MessagesService } from "../messages/messages.service";
+import { CoursesStore } from "../services/courses.store";
 
 @Component({
   selector: "course-dialog",
@@ -34,6 +35,7 @@ export class CourseDialogComponent implements AfterViewInit {
     private coursesService: CoursesService,
     private loadingService: LoadingService,
     private messageService: MessagesService,
+    private coursesStore: CoursesStore,
     @Inject(MAT_DIALOG_DATA) course: Course
   ) {
     // this will only trigger the loading component in the course dialog component
@@ -51,19 +53,25 @@ export class CourseDialogComponent implements AfterViewInit {
   ngAfterViewInit() {}
 
   save() {
-    const changes = this.form.value;
-    const saveCourse$ = this.loadingService
-      .showLoaderUntilComplete(
-        this.coursesService.saveCourse(this.course.id, changes)
-      )
-      .pipe(
-        catchError((error) => {
-          this.messageService.showErrors("Could not update course");
-          console.log("error", error);
-          // returns an error observable
-          return throwError(error);
-        })
-      );
+    // const changes = this.form.value;
+    // const saveCourse$ = this.loadingService
+    //   .showLoaderUntilComplete(
+    //     this.coursesService.saveCourse(this.course.id, changes)
+    //   )
+    //   .pipe(
+    //     catchError((error) => {
+    //       this.messageService.showErrors("Could not update course");
+    //       console.log("error", error);
+    //       // returns an error observable
+    //       return throwError(error);
+    //     })
+    //   );
+
+    // notice how we have to use the loadingService here instead of the store
+    // because the store uses the global Loading component
+    const saveCourse$ = this.loadingService.showLoaderUntilComplete(
+      this.coursesStore.saveCourse(this.course.id, this.form.value)
+    );
 
     saveCourse$.subscribe((res) => {
       this.dialogRef.close(res);
