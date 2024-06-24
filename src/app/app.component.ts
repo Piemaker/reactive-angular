@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { LoadingService } from "./loading/loading.service";
 import { MessagesService } from "./messages/messages.service";
+import { AuthStore } from "./services/auth.store";
 
 // LoadingService is provided for app component and all its children
 // shouldn't be provided to the app module otherwise it will have on instance to the entire app
@@ -13,9 +14,11 @@ import { MessagesService } from "./messages/messages.service";
   providers: [],
 })
 export class AppComponent implements OnInit {
-  constructor() {}
+  constructor(public authStore: AuthStore) {}
 
   ngOnInit() {}
 
-  logout() {}
+  logout() {
+    this.authStore.logout();
+  }
 }
