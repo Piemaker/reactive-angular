@@ -21,9 +21,21 @@ import {
   shareReplay,
   catchError,
 } from "rxjs/operators";
-import { merge, fromEvent, Observable, concat, throwError } from "rxjs";
+import {
+  merge,
+  fromEvent,
+  Observable,
+  concat,
+  throwError,
+  combineLatest,
+} from "rxjs";
 import { Lesson } from "../model/lesson";
 import { CoursesService } from "../services/CoursesService";
+
+interface CourseData {
+  course: Course;
+  lessons: Lesson[];
+}
 
 @Component({
   selector: "course",
@@ -31,9 +43,7 @@ import { CoursesService } from "../services/CoursesService";
   styleUrls: ["./course.component.css"],
 })
 export class CourseComponent implements OnInit {
-  course$: Observable<Course>;
-
-  lessons$: Observable<Lesson[]>;
+  courseData$: Observable<CourseData>;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,7 +53,19 @@ export class CourseComponent implements OnInit {
   ngOnInit() {
     const COURSE_ID = parseInt(this.route.snapshot.paramMap.get("courseId"));
 
-    this.course$ = this.coursesService.getCourseById(COURSE_ID);
-    this.lessons$ = this.coursesService.getCourseLessons(COURSE_ID);
+    const course$ = this.coursesService
+      .getCourseById(COURSE_ID)
+      .pipe(startWith(null));
+    const lessons$ = this.coursesService
+      .getCourseLessons(COURSE_ID)
+      .pipe(startWith([]));
+    // combineLatest emits the latest values from each observables
+    // however it has to wait for both observable to emit their initial values
+    // to emit either of the values as soon as they are ready we have to set them to startWith(null)
+    this.courseData$ = combineLatest([course$, lessons$]).pipe(
+      map(([course, lessons]) => {
+        return { course, lessons };
+      })
+    );
   }
 }
