@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   OnInit,
@@ -41,7 +42,10 @@ interface CourseData {
   selector: "course",
   templateUrl: "./course.component.html",
   styleUrls: ["./course.component.css"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
+
+// OnPush change detection is triggered only when the component's input/Observable are changed
 export class CourseComponent implements OnInit {
   courseData$: Observable<CourseData>;
 
